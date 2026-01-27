@@ -14,10 +14,11 @@ namespace banking {
         BankingManager &manager;
 
     public:
+        
         explicit BankingCLI(BankingManager &m) : manager(m) {}
 
         // Admin banking interface
-        void run(const utils::ID &userId, utils::Role userRole);
+        // void run(const utils::ID &userId, utils::Role userRole);
 
         // User banking interface
         void runBanking(const utils::ID &userId, utils::Role userRole);

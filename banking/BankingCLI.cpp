@@ -16,7 +16,7 @@ namespace banking {
         std::cout << "BDT " << taka << "." << std::setfill('0') << std::setw(2) << paisa;
     }
 
-    void BankingCLI::run(const utils::ID &userId, utils::Role userRole) {
+    void BankingCLI::runBanking(const utils::ID &userId, utils::Role userRole) {
         manager.load();
         auto accountId = manager.getOrCreateAccountForUser(userId);
         
@@ -90,59 +90,59 @@ namespace banking {
         }
     }
 
-    void BankingCLI::runBanking(const utils::ID &userId, utils::Role userRole) {
-        manager.load();
-        auto accountId = manager.getOrCreateAccountForUser(userId);
+//     void BankingCLI::runBanking(const utils::ID &userId, utils::Role userRole) {
+//         manager.load();
+//         auto accountId = manager.getOrCreateAccountForUser(userId);
         
-        std::cout << "\n========== Your Account ==========\n\n";
+//         std::cout << "\n========== Your Account ==========\n\n";
         
-        auto account = manager.getAccount(accountId);
-        long long balance = account ? account->getBalanceCents() : 0;
+//         auto account = manager.getAccount(accountId);
+//         long long balance = account ? account->getBalanceCents() : 0;
         
-        std::cout << "Current Balance : ";
-        printFormattedBalance(balance);
-        std::cout << "\n\n";
+//         std::cout << "Current Balance : ";
+//         printFormattedBalance(balance);
+//         std::cout << "\n\n";
         
-        std::cout << "1. View Transaction History\n";
-        std::cout << "2. Add Funds to Account\n";
-        std::cout << "0. Back\n";
-        std::cout << "\nSelect an option > ";
+//         std::cout << "1. View Transaction History\n";
+//         std::cout << "2. Add Funds to Account\n";
+//         std::cout << "0. Back\n";
+//         std::cout << "\nSelect an option > ";
         
-        int choice = 0;
-        std::cin >> choice;
+//         int choice = 0;
+//         std::cin >> choice;
         
-        if (choice == 1) {
-            // View transaction history
-            auto transactions = manager.getTransactionsForAccount(accountId);
+//         if (choice == 1) {
+//             // View transaction history
+//             auto transactions = manager.getTransactionsForAccount(accountId);
             
-            if (transactions.empty()) {
-                std::cout << "\nNo transactions found.\n";
-            } else {
-                std::cout << "\n--- Recent Transactions ---\n";
-                for (const auto &transaction : transactions) {
-                    std::string sign = (transaction.getType() == TransactionType::Credit) ? "+" : "-";
-                    std::cout << sign << " ";
-                    printFormattedBalance(transaction.getAmountCents());
-                    std::cout << " | " << transaction.getDescription() << "\n";
-                }
-            }
-        } else if (choice == 2) {
-            // Add funds
-            if (!access::AccessControl::anyOf(userRole, {utils::Role::Passenger, utils::Role::Admin})) {
-                std::cout << "\nAccess denied.\n";
-                return;
-            }
+//             if (transactions.empty()) {
+//                 std::cout << "\nNo transactions found.\n";
+//             } else {
+//                 std::cout << "\n--- Recent Transactions ---\n";
+//                 for (const auto &transaction : transactions) {
+//                     std::string sign = (transaction.getType() == TransactionType::Credit) ? "+" : "-";
+//                     std::cout << sign << " ";
+//                     printFormattedBalance(transaction.getAmountCents());
+//                     std::cout << " | " << transaction.getDescription() << "\n";
+//                 }
+//             }
+//         } else if (choice == 2) {
+//             // Add funds
+//             if (!access::AccessControl::anyOf(userRole, {utils::Role::Passenger, utils::Role::Admin})) {
+//                 std::cout << "\nAccess denied.\n";
+//                 return;
+//             }
             
-            std::cout << "\nEnter amount to add (BDT): ";
-            long long amount;
-            std::cin >> amount;
+//             std::cout << "\nEnter amount to add (BDT): ";
+//             long long amount;
+//             std::cin >> amount;
             
-            auto result = manager.deposit(accountId, toCents(amount), "User deposit");
-            if (result.ok) {
-                std::cout << "\n✓ Funds added successfully.\n";
-            } else {
-                std::cout << "\n" << result.message << "\n";
-            }
-        }
-    }
+//             auto result = manager.deposit(accountId, toCents(amount), "User deposit");
+//             if (result.ok) {
+//                 std::cout << "\n✓ Funds added successfully.\n";
+//             } else {
+//                 std::cout << "\n" << result.message << "\n";
+//             }
+//         }
+//     }
 }

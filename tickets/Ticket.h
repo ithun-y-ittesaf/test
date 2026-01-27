@@ -34,8 +34,11 @@ namespace tickets {
 
         // Getters for all ticket properties
         const utils::ID &getId() const { return id; }
+
         const utils::ID &getPassengerId() const { return passengerId; }
+
         const utils::ID &getFlightId() const { return flightId; }
+        
         const std::string &getIssuedDate() const { return issuedDate; }
         const std::string &getOrigin() const { return origin; }
         const std::string &getDestination() const { return destination; }

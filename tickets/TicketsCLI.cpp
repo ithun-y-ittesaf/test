@@ -56,8 +56,7 @@ namespace tickets {
                   << selectedTicket.getDestination() << "\n";
         std::cout << "Flight Date   : " << selectedTicket.getFlightDate() << "\n";
         std::cout << "Issued        : " << selectedTicket.getIssuedDate() << "\n";
-        std::cout << "Status        : VALID\n";
-        std::cout << "Boarding Gate : Assigned at airport\n";
+        std::cout << "Status        : VALID\n"; // More to be added later
     }
 
     void TicketsCLI::runTravelHistory(const utils::ID &userId, utils::Role userRole) {

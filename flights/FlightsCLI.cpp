@@ -44,10 +44,10 @@ namespace flights {
                 int capacity;
                 
                 std::cout << "\n--- Create Flight ---\n";
-                std::cout << "Origin (Airport Code): ";
+                std::cout << "Origin (City): ";
                 std::cin >> origin;
                 
-                std::cout << "Destination (Airport Code): ";
+                std::cout << "Destination (City): ";
                 std::cin >> destination;
                 
                 std::cout << "Date (YYYY-MM-DD): ";
@@ -135,9 +135,9 @@ namespace flights {
         std::string origin, destination, date;
         if (searchChoice == 1) {
             std::cout << "\n--- Enter Search Criteria ---\n";
-            std::cout << "From (Airport Code): ";
+            std::cout << "From (City): ";
             std::cin >> origin;
-            std::cout << "To (Airport Code): ";
+            std::cout << "To (City): ";
             std::cin >> destination;
             std::cout << "Date (YYYY-MM-DD): ";
             std::cin >> date;

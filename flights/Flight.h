@@ -5,10 +5,7 @@
 #include "../utils/Types.h"
 
 namespace flights {
-    /**
-     * Represents a flight in the system.
-     * Contains route, date, and seat availability information.
-     */
+    
     class Flight {
     private:
         utils::ID id;
