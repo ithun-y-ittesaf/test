@@ -4,20 +4,27 @@
 #include <iomanip>
 
 namespace logging {
-    static std::string nowTS() {
+    // Helper function to get current timestamp as human-readable string
+    static std::string getCurrentTimestamp() {
         using namespace std::chrono;
-        auto t = system_clock::to_time_t(system_clock::now());
-        std::tm tm = *std::localtime(&t);
-        char buf[32];
-        std::strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", &tm);
-        return std::string(buf);
+        
+        auto now = system_clock::to_time_t(system_clock::now());
+        std::tm timeinfo = *std::localtime(&now);
+        
+        char buffer[32];
+        std::strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", &timeinfo);
+        
+        return std::string(buffer);
     }
 
     void Logger::logCritical(const std::string &action, const std::string &details) {
-        std::ofstream out("storage/data/logs.txt", std::ios::app);
-        if (!out) {
-            return; // graceful: skip if cannot open
+        std::ofstream logFile("storage/data/logs.txt", std::ios::app);
+        
+        if (!logFile) {
+            // Gracefully handle if log file cannot be opened
+            return;
         }
-        out << nowTS() << " | " << action << " | " << details << "\n";
+        
+        logFile << getCurrentTimestamp() << " | " << action << " | " << details << "\n";
     }
 }

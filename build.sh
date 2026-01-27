@@ -9,6 +9,6 @@ g++ -std=c++17 -Wall -Wextra -Werror \
   flights/Flight.cpp flights/FlightManager.cpp flights/FlightsCLI.cpp \
   tickets/Ticket.cpp tickets/TicketManager.cpp tickets/TicketsCLI.cpp \
   access/AccessControl.cpp storage/DataStorage.cpp logging/Logger.cpp \
-  -I. -o aircli-lite
+  -I. -o aircli
 
-echo "Built ./aircli-lite"
+echo "Built ./aircli successfully."

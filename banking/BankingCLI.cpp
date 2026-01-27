@@ -4,59 +4,107 @@
 #include <iomanip>
 
 namespace banking {
-    static long long dollarsToCents(long long dollars) { return dollars * 100; }
+    // Helper function to convert BDT to cents
+    static long long toCents(long long amount) {
+        return amount * 100;
+    }
 
-    void BankingCLI::run(const utils::ID &currentUserId, utils::Role currentRole) {
+    // Helper function to format balance for display
+    static void printFormattedBalance(long long cents) {
+        long long taka = cents / 100;
+        long long paisa = cents % 100;
+        std::cout << "BDT " << taka << "." << std::setfill('0') << std::setw(2) << paisa;
+    }
+
+    void BankingCLI::run(const utils::ID &userId, utils::Role userRole) {
         manager.load();
-        auto accId = manager.getOrCreateAccountForUser(currentUserId);
-        std::cout << "\n-- Banking --\n";
-        std::cout << "1) View Balance\n2) Deposit\n3) Withdraw\n4) View Transactions\n5) Back\nChoice: ";
-        int ch = 0; std::cin >> ch;
-        if (ch == 1) {
-            auto acc = manager.getAccount(accId);
-            long long cents = acc ? acc->getBalanceCents() : 0;
-            std::cout << "Balance: $" << (cents/100) << "." << (cents%100) << "\n";
-        } else if (ch == 2) {
-            if (!access::AccessControl::anyOf(currentRole, {utils::Role::Passenger, utils::Role::Admin})) {
-                std::cout << "Access denied.\n"; return;
+        auto accountId = manager.getOrCreateAccountForUser(userId);
+        
+        std::cout << "\n--- Banking Services ---\n";
+        std::cout << "1. Check Balance\n";
+        std::cout << "2. Deposit Funds\n";
+        std::cout << "3. Withdraw Funds\n";
+        std::cout << "4. View Transactions\n";
+        std::cout << "5. Back\n";
+        std::cout << "Choice: ";
+        
+        int choice = 0;
+        std::cin >> choice;
+        
+        if (choice == 1) {
+            // View balance
+            auto account = manager.getAccount(accountId);
+            long long balance = account ? account->getBalanceCents() : 0;
+            std::cout << "\nCurrent Balance: ";
+            printFormattedBalance(balance);
+            std::cout << "\n";
+        } else if (choice == 2) {
+            // Deposit funds
+            if (!access::AccessControl::anyOf(userRole, {utils::Role::Passenger, utils::Role::Admin})) {
+                std::cout << "\nAccess denied.\n";
+                return;
             }
-            std::cout << "Amount (whole dollars): ";
-            long long amt; std::cin >> amt;
-            auto res = manager.deposit(accId, dollarsToCents(amt), "User deposit");
-            std::cout << (res.ok ? "OK: " : "ERR: ") << res.message << "\n";
-        } else if (ch == 3) {
-            if (!access::AccessControl::anyOf(currentRole, {utils::Role::Passenger, utils::Role::Admin})) {
-                std::cout << "Access denied.\n"; return;
+            
+            std::cout << "\nEnter amount to deposit (BDT): ";
+            long long amount;
+            std::cin >> amount;
+            
+            auto result = manager.deposit(accountId, toCents(amount), "Manual deposit");
+            if (result.ok) {
+                std::cout << "\n✓ Deposit successful.\n";
+            } else {
+                std::cout << "\n" << result.message << "\n";
             }
-            std::cout << "Amount (whole dollars): ";
-            long long amt; std::cin >> amt;
-            auto res = manager.withdraw(accId, dollarsToCents(amt), "User withdraw");
-            std::cout << (res.ok ? "OK: " : "ERR: ") << res.message << "\n";
-        } else if (ch == 4) {
-            auto txs = manager.getTransactionsForAccount(accId);
-            std::cout << "Transactions (" << txs.size() << "):\n";
-            for (const auto &t : txs) {
-                std::cout << "- " << (t.getType()==TransactionType::Credit?"CREDIT":"DEBIT")
-                          << " $" << (t.getAmountCents()/100) << "." << (t.getAmountCents()%100)
-                          << " | " << t.getDescription() << "\n";
+        } else if (choice == 3) {
+            // Withdraw funds
+            if (!access::AccessControl::anyOf(userRole, {utils::Role::Passenger, utils::Role::Admin})) {
+                std::cout << "\nAccess denied.\n";
+                return;
+            }
+            
+            std::cout << "\nEnter amount to withdraw (BDT): ";
+            long long amount;
+            std::cin >> amount;
+            
+            auto result = manager.withdraw(accountId, toCents(amount), "Manual withdrawal");
+            if (result.ok) {
+                std::cout << "\n✓ Withdrawal successful.\n";
+            } else {
+                std::cout << "\n" << result.message << "\n";
+            }
+        } else if (choice == 4) {
+            // View transactions
+            auto transactions = manager.getTransactionsForAccount(accountId);
+            
+            if (transactions.empty()) {
+                std::cout << "\nNo transactions yet.\n";
+            } else {
+                std::cout << "\nTransaction History:\n";
+                for (const auto &transaction : transactions) {
+                    std::string typeLabel = (transaction.getType() == TransactionType::Credit) ? "+" : "-";
+                    std::cout << typeLabel << " ";
+                    printFormattedBalance(transaction.getAmountCents());
+                    std::cout << " | " << transaction.getDescription() << "\n";
+                }
             }
         }
     }
 
-    void BankingCLI::runBanking(const utils::ID &currentUserId, utils::Role currentRole) {
+    void BankingCLI::runBanking(const utils::ID &userId, utils::Role userRole) {
         manager.load();
-        auto accId = manager.getOrCreateAccountForUser(currentUserId);
+        auto accountId = manager.getOrCreateAccountForUser(userId);
         
-        std::cout << "\n========== Banking ==========" << "\n";
+        std::cout << "\n========== Your Account ==========\n\n";
         
-        auto acc = manager.getAccount(accId);
-        long long cents = acc ? acc->getBalanceCents() : 0;
-        long long dollars = cents / 100;
-        long long paise = (cents % 100);
+        auto account = manager.getAccount(accountId);
+        long long balance = account ? account->getBalanceCents() : 0;
         
-        std::cout << "Balance       : BDT " << dollars << "," << std::setfill('0') << std::setw(2) << paise << "\n\n";
-        std::cout << "1. View Transactions\n";
-        std::cout << "2. Add Funds (Simulated)\n";
+        std::cout << "Current Balance : ";
+        printFormattedBalance(balance);
+        std::cout << "\n\n";
+        
+        std::cout << "1. View Transaction History\n";
+        std::cout << "2. Add Funds to Account\n";
         std::cout << "0. Back\n";
         std::cout << "\nSelect an option > ";
         
@@ -64,31 +112,36 @@ namespace banking {
         std::cin >> choice;
         
         if (choice == 1) {
-            auto txs = manager.getTransactionsForAccount(accId);
-            if (txs.empty()) {
-                std::cout << "\nNo transactions.\n";
+            // View transaction history
+            auto transactions = manager.getTransactionsForAccount(accountId);
+            
+            if (transactions.empty()) {
+                std::cout << "\nNo transactions found.\n";
             } else {
-                std::cout << "\nRecent Transactions:\n";
-                for (const auto &t : txs) {
-                    long long amt = t.getAmountCents() / 100;
-                    std::cout << (t.getType()==TransactionType::Credit?" + ": " - ")
-                              << "BDT " << amt << " | " << t.getDescription() << "\n";
+                std::cout << "\n--- Recent Transactions ---\n";
+                for (const auto &transaction : transactions) {
+                    std::string sign = (transaction.getType() == TransactionType::Credit) ? "+" : "-";
+                    std::cout << sign << " ";
+                    printFormattedBalance(transaction.getAmountCents());
+                    std::cout << " | " << transaction.getDescription() << "\n";
                 }
             }
         } else if (choice == 2) {
-            if (!access::AccessControl::anyOf(currentRole, {utils::Role::Passenger, utils::Role::Admin})) {
+            // Add funds
+            if (!access::AccessControl::anyOf(userRole, {utils::Role::Passenger, utils::Role::Admin})) {
                 std::cout << "\nAccess denied.\n";
                 return;
             }
-            std::cout << "\nEnter amount (BDT) to add : ";
-            long long amt;
-            std::cin >> amt;
             
-            auto res = manager.deposit(accId, dollarsToCents(amt), "User deposit");
-            if (res.ok) {
-                std::cout << "\n✅ Deposit successful.\n";
+            std::cout << "\nEnter amount to add (BDT): ";
+            long long amount;
+            std::cin >> amount;
+            
+            auto result = manager.deposit(accountId, toCents(amount), "User deposit");
+            if (result.ok) {
+                std::cout << "\n✓ Funds added successfully.\n";
             } else {
-                std::cout << "\n❌ " << res.message << "\n";
+                std::cout << "\n" << result.message << "\n";
             }
         }
     }

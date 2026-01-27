@@ -5,6 +5,10 @@
 #include "../utils/Types.h"
 
 namespace users {
+    /**
+     * Represents a user in the airCLI system.
+     * Stores their profile info and role permissions.
+     */
     class User {
     private:
         utils::ID id;
@@ -12,22 +16,31 @@ namespace users {
         std::string username;
         std::string password;
         utils::Role role;
-    public:
-        User() : role(utils::Role::Passenger) {}
-        User(const utils::ID &id, const std::string &name, const std::string &username, 
-             const std::string &password, utils::Role role)
-            : id(id), name(name), username(username), password(password), role(role) {}
 
+    public:
+        // Default constructor for empty user
+        User() : role(utils::Role::Passenger) {}
+
+        // Full constructor with all user details
+        User(const utils::ID &userId, const std::string &fullName, 
+             const std::string &userName, const std::string &pass, utils::Role userRole)
+            : id(userId), name(fullName), username(userName), 
+              password(pass), role(userRole) {}
+
+        // Getters for all user properties
         const utils::ID &getId() const { return id; }
         const std::string &getName() const { return name; }
         const std::string &getUsername() const { return username; }
         const std::string &getPassword() const { return password; }
         utils::Role getRole() const { return role; }
-        void setRole(utils::Role r) { role = r; }
 
+        // Update user role
+        void setRole(utils::Role newRole) { role = newRole; }
+
+        // Serialization for storage
         std::string serialize() const;
         static User deserialize(const std::string &line);
     };
 }
 
-#endif 
+#endif

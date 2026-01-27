@@ -6,6 +6,9 @@
 #include "../utils/Types.h"
 
 namespace users {
+    /**
+     * CLI interface for user authentication and account management.
+     */
     class UserCLI {
     private:
         UserManager &manager;
@@ -17,6 +20,8 @@ namespace users {
         
     public:
         explicit UserCLI(UserManager &m) : manager(m) {}
+        
+        // Run the welcome flow (login or signup)
         bool welcomeFlow(std::string &outUserId, utils::Role &outRole);
     };
 }

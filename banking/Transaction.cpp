@@ -3,6 +3,7 @@
 
 namespace banking {
     std::string Transaction::serialize() const {
+        // Format: id|accountId|amountCents|type|description|timestampSec
         return id + "|" + accountId + "|" + std::to_string(amountCents) + "|" +
                std::to_string(static_cast<int>(type)) + "|" + description + "|" +
                std::to_string(timestampSec);
@@ -10,17 +11,25 @@ namespace banking {
 
     Transaction Transaction::deserialize(const std::string &line) {
         std::stringstream ss(line);
-        std::string id, accId, amtStr, typeStr, desc, tsStr;
+        std::string id, accountId, amountStr, typeStr, description, timestampStr;
+        
+        // Parse pipe-delimited values
         std::getline(ss, id, '|');
-        std::getline(ss, accId, '|');
-        std::getline(ss, amtStr, '|');
+        std::getline(ss, accountId, '|');
+        std::getline(ss, amountStr, '|');
         std::getline(ss, typeStr, '|');
-        std::getline(ss, desc, '|');
-        std::getline(ss, tsStr, '|');
-        long long amt = 0, ts = 0; int t = 0;
-        try { amt = std::stoll(amtStr); } catch (...) { amt = 0; }
-        try { t = std::stoi(typeStr); } catch (...) { t = 0; }
-        try { ts = std::stoll(tsStr); } catch (...) { ts = 0; }
-        return Transaction(id, accId, amt, static_cast<TransactionType>(t), desc, ts);
+        std::getline(ss, description, '|');
+        std::getline(ss, timestampStr, '|');
+        
+        // Convert values to appropriate types
+        long long amount = 0, timestamp = 0;
+        int typeValue = 0;
+        
+        try { amount = std::stoll(amountStr); } catch (...) { amount = 0; }
+        try { typeValue = std::stoi(typeStr); } catch (...) { typeValue = 0; }
+        try { timestamp = std::stoll(timestampStr); } catch (...) { timestamp = 0; }
+        
+        return Transaction(id, accountId, amount, static_cast<TransactionType>(typeValue), 
+                         description, timestamp);
     }
 }

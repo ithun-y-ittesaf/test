@@ -7,54 +7,95 @@ namespace flights {
     bool FlightManager::load() {
         flightsById.clear();
         auto lines = storage::DataStorage::readAll("flights.txt");
-        for (const auto &l : lines) {
-            if (l.empty()) continue;
-            Flight f = Flight::deserialize(l);
-            flightsById[f.getId()] = f;
+        
+        for (const auto &line : lines) {
+            if (line.empty()) {
+                continue;
+            }
+            
+            Flight flight = Flight::deserialize(line);
+            flightsById[flight.getId()] = flight;
         }
+        
         return true;
     }
 
     bool FlightManager::save() const {
         std::vector<std::string> lines;
-        for (const auto &p : flightsById) {
-            lines.push_back(p.second.serialize());
+        
+        for (const auto &pair : flightsById) {
+            lines.push_back(pair.second.serialize());
         }
+        
         return storage::DataStorage::writeAll("flights.txt", lines);
     }
 
-    utils::ID FlightManager::createFlight(const std::string &orig, const std::string &dest, const std::string &date, int capacity) {
+    utils::ID FlightManager::createFlight(const std::string &origin, const std::string &destination, 
+                                         const std::string &date, int capacity) {
         using namespace std::chrono;
-        auto ts = duration_cast<seconds>(system_clock::now().time_since_epoch()).count();
-        utils::ID id = "F" + std::to_string(ts);
-        while (flightsById.find(id) != flightsById.end()) { ++ts; id = "F" + std::to_string(ts); }
-        Flight f(id, orig, dest, date, capacity, 0);
-        flightsById[id] = f;
-        storage::DataStorage::appendLine("flights.txt", f.serialize());
-        logging::Logger::logCritical("FlightCreate", "FLIGHT=" + id + "|" + orig + "->" + dest + "|cap=" + std::to_string(capacity));
-        return id;
+        
+        // Generate unique ID using current timestamp
+        auto timestamp = duration_cast<seconds>(system_clock::now().time_since_epoch()).count();
+        utils::ID flightId = "F" + std::to_string(timestamp);
+        
+        // Ensure ID is unique
+        while (flightsById.find(flightId) != flightsById.end()) {
+            ++timestamp;
+            flightId = "F" + std::to_string(timestamp);
+        }
+        
+        // Create new flight with no bookings yet
+        Flight newFlight(flightId, origin, destination, date, capacity, 0);
+        flightsById[flightId] = newFlight;
+        
+        // Persist to storage
+        storage::DataStorage::appendLine("flights.txt", newFlight.serialize());
+        
+        // Log the creation
+        logging::Logger::logCritical("FlightCreate", 
+            "FLIGHT=" + flightId + "|" + origin + "->" + destination + 
+            "|capacity=" + std::to_string(capacity));
+        
+        return flightId;
     }
 
     const Flight* FlightManager::get(const utils::ID &id) const {
         auto it = flightsById.find(id);
-        if (it == flightsById.end()) return nullptr;
+        if (it == flightsById.end()) {
+            return nullptr;
+        }
         return &it->second;
     }
 
     std::vector<Flight> FlightManager::all() const {
-        std::vector<Flight> v;
-        v.reserve(flightsById.size());
-        for (const auto &p : flightsById) v.push_back(p.second);
-        return v;
+        std::vector<Flight> flights;
+        flights.reserve(flightsById.size());
+        
+        for (const auto &pair : flightsById) {
+            flights.push_back(pair.second);
+        }
+        
+        return flights;
     }
 
-    bool FlightManager::bookSeat(const utils::ID &id) {
-        auto it = flightsById.find(id);
-        if (it == flightsById.end()) return false;
-        if (it->second.getSeatsBooked() >= it->second.getCapacity()) return false;
+    bool FlightManager::bookSeat(const utils::ID &flightId) {
+        auto it = flightsById.find(flightId);
+        if (it == flightsById.end()) {
+            return false;
+        }
+        
+        // Check if flight is full
+        if (it->second.getSeatsBooked() >= it->second.getCapacity()) {
+            return false;
+        }
+        
+        // Book a seat
         it->second.setSeatsBooked(it->second.getSeatsBooked() + 1);
         save();
-        logging::Logger::logCritical("Booking", std::string("FLIGHT=") + id);
+        
+        // Log the booking
+        logging::Logger::logCritical("Booking", "FLIGHT=" + flightId);
+        
         return true;
     }
 }

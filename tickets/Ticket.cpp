@@ -3,19 +3,24 @@
 
 namespace tickets {
     std::string Ticket::serialize() const {
-        return id + "|" + passengerId + "|" + flightId + "|" + issuedDate + "|" + origin + "|" + destination + "|" + flightDate;
+        // Format: id|passengerId|flightId|issuedDate|origin|destination|flightDate
+        return id + "|" + passengerId + "|" + flightId + "|" + issuedDate + "|" + 
+               origin + "|" + destination + "|" + flightDate;
     }
 
     Ticket Ticket::deserialize(const std::string &line) {
         std::stringstream ss(line);
-        std::string id, passId, flightId, issued, orig, dest, fDate;
+        std::string id, passengerId, flightId, issuedDate, origin, destination, flightDate;
+        
+        // Parse pipe-delimited values
         std::getline(ss, id, '|');
-        std::getline(ss, passId, '|');
+        std::getline(ss, passengerId, '|');
         std::getline(ss, flightId, '|');
-        std::getline(ss, issued, '|');
-        std::getline(ss, orig, '|');
-        std::getline(ss, dest, '|');
-        std::getline(ss, fDate, '|');
-        return Ticket(id, passId, flightId, issued, orig, dest, fDate);
+        std::getline(ss, issuedDate, '|');
+        std::getline(ss, origin, '|');
+        std::getline(ss, destination, '|');
+        std::getline(ss, flightDate, '|');
+        
+        return Ticket(id, passengerId, flightId, issuedDate, origin, destination, flightDate);
     }
 }

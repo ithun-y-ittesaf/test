@@ -6,14 +6,22 @@
 #include "../utils/Types.h"
 
 namespace banking {
+    /**
+     * CLI interface for banking operations and account management.
+     */
     class BankingCLI {
     private:
         BankingManager &manager;
+
     public:
         explicit BankingCLI(BankingManager &m) : manager(m) {}
-        void run(const utils::ID &currentUserId, utils::Role currentRole);
-        void runBanking(const utils::ID &currentUserId, utils::Role currentRole);
+
+        // Admin banking interface
+        void run(const utils::ID &userId, utils::Role userRole);
+
+        // User banking interface
+        void runBanking(const utils::ID &userId, utils::Role userRole);
     };
 }
 
-#endif 
+#endif
