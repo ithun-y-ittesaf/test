@@ -4,6 +4,7 @@
 #include <string>
 #include "FlightManager.h"
 #include "../tickets/TicketManager.h"
+#include "../banking/BankingManager.h"
 #include "../utils/Types.h"
 
 using namespace std;
@@ -14,10 +15,11 @@ namespace flights {
     private:
         FlightManager &manager;
         tickets::TicketManager &ticketManager;
+        banking::BankingManager &bankingManager;
 
     public:
-        explicit FlightsCLI(FlightManager &m, tickets::TicketManager &tm) 
-            : manager(m), ticketManager(tm) {}
+        explicit FlightsCLI(FlightManager &m, tickets::TicketManager &tm, banking::BankingManager &bm) 
+            : manager(m), ticketManager(tm), bankingManager(bm) {}
 
         void run(const utils::ID &userId, utils::Role userRole);
 

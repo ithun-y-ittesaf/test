@@ -27,7 +27,7 @@ int main() {
     // Set up the CLI interfaces
     users::UserCLI userCLI(userManager);
     banking::BankingCLI bankingCLI(bankingManager);
-    flights::FlightsCLI flightsCLI(flightManager, ticketManager);
+    flights::FlightsCLI flightsCLI(flightManager, ticketManager, bankingManager);
     tickets::TicketsCLI ticketsCLI(ticketManager, flightManager);
 
     // Handle user authentication

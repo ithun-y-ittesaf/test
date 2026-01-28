@@ -196,7 +196,26 @@ namespace flights {
         cout << "Route: " << selectedFlight.getOrigin() << " → " 
                   << selectedFlight.getDestination() << "\n";
         cout << "Date: " << selectedFlight.getDate() << "\n";
-        cout << "Price: BDT 45,000\n\n";
+        
+        // Check user's balance before showing price
+        const banking::BankingAccount* account = bankingManager.getAccountByUser(userId);
+        const long long FLIGHT_FARE_CENTS = 4500000; // 45,000 BDT in cents
+        
+        if (!account) {
+            cout << "\nError: No banking account found for user.\n";
+            return;
+        }
+        
+        cout << "Price: BDT 45,000\n";
+        cout << "Your Current Balance: BDT " << (account->getBalanceCents() / 100) << "\n\n";
+        
+        // Check if user has sufficient funds
+        if (account->getBalanceCents() < FLIGHT_FARE_CENTS) {
+            cout << "✗ Insufficient funds! You need BDT 45,000 to book this flight.\n";
+            cout << "Please deposit more money to your account.\n";
+            return;
+        }
+        
         cout << "Proceed with booking? (y/n) > ";
         
         char proceed;
@@ -211,6 +230,18 @@ namespace flights {
         bool booked = manager.bookSeat(selectedFlight.getId());
         if (!booked) {
             cout << "\nBooking failed - no seats available.\n";
+            return;
+        }
+        
+        // Deduct fare from user's account
+        utils::ID accountId = account->getId();
+        auto withdrawResult = bankingManager.withdraw(accountId, FLIGHT_FARE_CENTS, 
+                                                       "Flight ticket - " + selectedFlight.getId());
+        
+        if (!withdrawResult.ok) {
+            cout << "\nPayment failed: " << withdrawResult.message << "\n";
+            // Revert the booking since payment failed
+            // Note: In a real system, this should be atomic
             return;
         }
         

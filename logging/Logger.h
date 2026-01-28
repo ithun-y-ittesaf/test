@@ -3,6 +3,8 @@
 
 #include <string>
 
+using namespace std;
+
 namespace logging {
     
     class Logger {
