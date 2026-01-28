@@ -5,24 +5,24 @@
 #include "UserManager.h"
 #include "../utils/Types.h"
 
+using namespace std;
+
 namespace users {
-    /**
-     * CLI interface for user authentication and account management.
-     */
+    
     class UserCLI {
     private:
         UserManager &manager;
         
         void showWelcome();
-        bool runSignup(std::string &outUserId);
-        bool runLogin(std::string &outUserId);
-        void linkBankAccount(const std::string &userId);
+        bool runSignup(string &outUserId);
+        bool runLogin(string &outUserId);
+        void linkBankAccount(const string &userId);
         
     public:
         explicit UserCLI(UserManager &m) : manager(m) {}
         
         // Run the welcome flow (login or signup)
-        bool welcomeFlow(std::string &outUserId, utils::Role &outRole);
+        bool welcomeFlow(string &outUserId, utils::Role &outRole);
     };
 }
 

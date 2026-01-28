@@ -9,6 +9,8 @@
 #include "tickets/TicketsCLI.h"
 #include "utils/Types.h"
 
+using namespace std;
+
 int main() {
     // Initialize all our core services
     users::UserManager userManager;
@@ -29,7 +31,7 @@ int main() {
     tickets::TicketsCLI ticketsCLI(ticketManager, flightManager);
 
     // Handle user authentication
-    std::string userId;
+    string userId;
     utils::Role userRole = utils::Role::Passenger;
 
     if (!userCLI.welcomeFlow(userId, userRole)) {
@@ -39,25 +41,25 @@ int main() {
     // Main dashboard loop
     bool isRunning = true;
     while (isRunning) {
-        std::cout << "\n==============================\n";
-        std::cout << " airCLI Dashboard\n";
-        std::cout << "==============================\n";
-        std::cout << "1. Search & Book Flights\n";
-        std::cout << "2. My Tickets\n";
-        std::cout << "3. Travel History\n";
-        std::cout << "4. Banking\n";
+        cout << "\n==============================\n";
+        cout << " airCLI Dashboard\n";
+        cout << "==============================\n";
+        cout << "1. Search & Book Flights\n";
+        cout << "2. My Tickets\n";
+        cout << "3. Travel History\n";
+        cout << "4. Banking\n";
         
         if (userRole == utils::Role::Admin) {
-            std::cout << "5. Admin: Manage Flights\n";
-            std::cout << "6. Logout\n";
+            cout << "5. Admin: Manage Flights\n";
+            cout << "6. Logout\n";
         } else {
-            std::cout << "5. Logout\n";
+            cout << "5. Logout\n";
         }
         
-        std::cout << "\nSelect an option > ";
+        cout << "\nSelect an option > ";
 
         int choice = 0;
-        std::cin >> choice;
+        cin >> choice;
 
         if (choice == 1) {
             flightsCLI.runSearchAndBook(userId, userRole);
@@ -71,13 +73,13 @@ int main() {
             flightsCLI.run(userId, userRole);
         } else if ((choice == 5 && userRole != utils::Role::Admin) ||
                    (choice == 6 && userRole == utils::Role::Admin)) {
-            std::cout << "\nLogging out...\n";
+            cout << "\nLogging out...\n";
             isRunning = false;
         } else {
-            std::cout << "\nInvalid option. Please try again.\n";
+            cout << "\nInvalid option. Please try again.\n";
         }
     }
 
-    std::cout << "\nThanks for using airCLI. Goodbye!\n";
+    cout << "\nThanks for using airCLI. Goodbye!\n";
     return 0;
 }

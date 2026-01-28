@@ -4,32 +4,20 @@
 #include <string>
 #include <vector>
 
+using namespace std;
+
 namespace storage {
-    /**
-     * Handles all persistent data storage operations.
-     * Manages reading and writing data files to disk.
-     */
+    
     class DataStorage {
     public:
-        /**
-         * Read all lines from a data file.
-         */
-        static std::vector<std::string> readAll(const std::string &filename);
+        
+        static vector<string> readAll(const string &filename);
 
-        /**
-         * Write all lines to a data file (overwrites existing content).
-         */
-        static bool writeAll(const std::string &filename, const std::vector<std::string> &lines);
+        static bool writeAll(const string &filename, const vector<string> &lines);
 
-        /**
-         * Append a line to a data file.
-         */
-        static bool appendLine(const std::string &filename, const std::string &line);
+        static bool appendLine(const string &filename, const string &line);
 
-        /**
-         * Get the full path for a data file.
-         */
-        static std::string pathFor(const std::string &filename);
+        static string pathFor(const string &filename);
     };
 }
 

@@ -1,25 +1,27 @@
 #include "BankingAccount.h"
 #include <sstream>
 
+using namespace std;
+
 namespace banking {
-    std::string BankingAccount::serialize() const {
+    string BankingAccount::serialize() const {
         // Format: id|userId|balanceCents
-        return id + "|" + userId + "|" + std::to_string(balanceCents);
+        return id + "|" + userId + "|" + to_string(balanceCents);
     }
 
-    BankingAccount BankingAccount::deserialize(const std::string &line) {
-        std::stringstream ss(line);
-        std::string id, userId, balanceStr;
+    BankingAccount BankingAccount::deserialize(const string &line) {
+        stringstream ss(line);
+        string id, userId, balanceStr;
         
         // Parse pipe-delimited values
-        std::getline(ss, id, '|');
-        std::getline(ss, userId, '|');
-        std::getline(ss, balanceStr, '|');
+        getline(ss, id, '|');
+        getline(ss, userId, '|');
+        getline(ss, balanceStr, '|');
         
         // Convert balance to long long
         long long balance = 0;
         try {
-            balance = std::stoll(balanceStr);
+            balance = stoll(balanceStr);
         } catch (...) {
             balance = 0;
         }

@@ -1,93 +1,95 @@
 #include "UserCLI.h"
 #include <iostream>
 
+using namespace std;
+
 namespace users {
     void UserCLI::showWelcome() {
-        std::cout << "\n==================================================\n";
-        std::cout << "              Welcome to airCLI ✈\n";
-        std::cout << "              Flight Booking System\n";
-        std::cout << "==================================================\n\n";
-        std::cout << "1. Login\n";
-        std::cout << "2. Create New Account\n";
-        std::cout << "3. Exit\n\n";
-        std::cout << "What would you like to do? > ";
+        cout << "\n==================================================\n";
+        cout << "              Welcome to airCLI ✈\n";
+        cout << "              Flight Booking System\n";
+        cout << "==================================================\n\n";
+        cout << "1. Login\n";
+        cout << "2. Create New Account\n";
+        cout << "3. Exit\n\n";
+        cout << "What would you like to do? > ";
     }
 
-    bool UserCLI::runSignup(std::string &outUserId) {
-        std::cout << "\n--- Create Your Account ---\n";
+    bool UserCLI::runSignup(string &outUserId) {
+        cout << "\n--- Create Your Account ---\n";
         
-        std::cout << "\nFull Name     : ";
-        std::string name;
-        std::cin.ignore();
-        std::getline(std::cin, name);
+        cout << "\nFull Name     : ";
+        string name;
+        cin.ignore();
+        getline(cin, name);
         
-        std::cout << "Username      : ";
-        std::string username;
-        std::getline(std::cin, username);
+        cout << "Username      : ";
+        string username;
+        getline(cin, username);
         
         if (manager.findByUsername(username)) {
-            std::cout << "\nSorry, that username is already taken. Please try another.\n";
+            cout << "\nSorry, that username is already taken. Please try another.\n";
             return false;
         }
         
-        std::cout << "Password      : ";
-        std::string password;
-        std::getline(std::cin, password);
+        cout << "Password      : ";
+        string password;
+        getline(cin, password);
         
-        std::cout << "Confirm       : ";
-        std::string confirmPassword;
-        std::getline(std::cin, confirmPassword);
+        cout << "Confirm       : ";
+        string confirmPassword;
+        getline(cin, confirmPassword);
         
         if (password != confirmPassword) {
-            std::cout << "\nThe passwords don't match. Please try again.\n";
+            cout << "\nThe passwords don't match. Please try again.\n";
             return false;
         }
         
         outUserId = manager.createUser(name, username, password);
         
-        std::cout << "\n✓ Account created successfully!\n";
-        std::cout << "Your user ID: " << outUserId << "\n";
-        std::cout << "You can now log in with your username and password.\n";
+        cout << "\n✓ Account created successfully!\n";
+        cout << "Your user ID: " << outUserId << "\n";
+        cout << "You can now log in with your username and password.\n";
         
         return true;
     }
 
-    bool UserCLI::runLogin(std::string &outUserId) {
-        std::cout << "\n--- Login ---\n";
+    bool UserCLI::runLogin(string &outUserId) {
+        cout << "\n--- Login ---\n";
         
-        std::cout << "\nUsername : ";
-        std::string username;
-        std::cin.ignore();
-        std::getline(std::cin, username);
+        cout << "\nUsername : ";
+        string username;
+        cin.ignore();
+        getline(cin, username);
         
-        std::cout << "Password : ";
-        std::string password;
-        std::getline(std::cin, password);
+        cout << "Password : ";
+        string password;
+        getline(cin, password);
         
         if (!manager.authenticate(username, password, outUserId)) {
-            std::cout << "\nIncorrect username or password. Please try again.\n";
+            cout << "\nIncorrect username or password. Please try again.\n";
             return false;
         }
         
         const User* user = manager.get(outUserId);
-        std::cout << "\n✓ Login successful!\n";
-        std::cout << "Welcome back, " << user->getName() << "!\n";
+        cout << "\n✓ Login successful!\n";
+        cout << "Welcome back, " << user->getName() << "!\n";
         
         return true;
     }
 
-    void UserCLI::linkBankAccount(const std::string &userId) {
+    void UserCLI::linkBankAccount(const string &userId) {
         // Future feature: link external bank account
         (void)userId;
     }
 
-    bool UserCLI::welcomeFlow(std::string &outUserId, utils::Role &outRole) {
+    bool UserCLI::welcomeFlow(string &outUserId, utils::Role &outRole) {
         manager.load();
         
         while (true) {
             showWelcome();
             int choice = 0;
-            std::cin >> choice;
+            cin >> choice;
             
             if (choice == 1) {
                 if (runLogin(outUserId)) {
@@ -102,10 +104,10 @@ namespace users {
                     return true;
                 }
             } else if (choice == 3) {
-                std::cout << "\nThanks for visiting airCLI. Goodbye!\n";
+                cout << "\nThanks for visiting airCLI. Goodbye!\n";
                 return false;
             } else {
-                std::cout << "\nPlease enter 1, 2, or 3.\n";
+                cout << "\nPlease enter 1, 2, or 3.\n";
             }
         }
     }

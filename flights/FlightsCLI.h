@@ -6,10 +6,10 @@
 #include "../tickets/TicketManager.h"
 #include "../utils/Types.h"
 
+using namespace std;
+
 namespace flights {
-    /**
-     * CLI interface for flight management and booking operations.
-     */
+
     class FlightsCLI {
     private:
         FlightManager &manager;
@@ -19,10 +19,8 @@ namespace flights {
         explicit FlightsCLI(FlightManager &m, tickets::TicketManager &tm) 
             : manager(m), ticketManager(tm) {}
 
-        // Admin flight management interface
         void run(const utils::ID &userId, utils::Role userRole);
 
-        // Passenger flight search and booking interface
         void runSearchAndBook(const utils::ID &userId, utils::Role userRole);
     };
 }

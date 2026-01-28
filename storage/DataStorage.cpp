@@ -1,30 +1,32 @@
 #include "DataStorage.h"
 #include <fstream>
 
+using namespace std;
+
 namespace storage {
-    std::string DataStorage::pathFor(const std::string &filename) {
-        return std::string("storage/data/") + filename;
+    string DataStorage::pathFor(const string &filename) {
+        return string("storage/data/") + filename;
     }
 
-    std::vector<std::string> DataStorage::readAll(const std::string &filename) {
-        std::vector<std::string> lines;
-        std::ifstream inputFile(pathFor(filename));
+    vector<string> DataStorage::readAll(const string &filename) {
+        vector<string> lines;
+        ifstream inputFile(pathFor(filename));
         
         if (!inputFile) {
             // File doesn't exist or can't be opened
             return lines;
         }
         
-        std::string line;
-        while (std::getline(inputFile, line)) {
+        string line;
+        while (getline(inputFile, line)) {
             lines.push_back(line);
         }
         
         return lines;
     }
 
-    bool DataStorage::writeAll(const std::string &filename, const std::vector<std::string> &lines) {
-        std::ofstream outputFile(pathFor(filename));
+    bool DataStorage::writeAll(const string &filename, const vector<string> &lines) {
+        ofstream outputFile(pathFor(filename));
         
         if (!outputFile) {
             return false;
@@ -37,8 +39,8 @@ namespace storage {
         return true;
     }
 
-    bool DataStorage::appendLine(const std::string &filename, const std::string &line) {
-        std::ofstream outputFile(pathFor(filename), std::ios::app);
+    bool DataStorage::appendLine(const string &filename, const string &line) {
+        ofstream outputFile(pathFor(filename), ios::app);
         
         if (!outputFile) {
             return false;

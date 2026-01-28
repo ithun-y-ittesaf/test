@@ -2,6 +2,8 @@
 #include "../storage/DataStorage.h"
 #include <chrono>
 
+using namespace std;
+
 namespace users {
     bool UserManager::load() {
         auto lines = storage::DataStorage::readAll("users.txt");
@@ -16,19 +18,19 @@ namespace users {
     }
 
     bool UserManager::save() const {
-        std::vector<std::string> lines;
+        vector<string> lines;
         for (const auto &p : usersById) {
             lines.push_back(p.second.serialize());
         }
         return storage::DataStorage::writeAll("users.txt", lines);
     }
 
-    utils::ID UserManager::createUser(const std::string &name, const std::string &username, const std::string &password) {
-        using namespace std::chrono;
+    utils::ID UserManager::createUser(const string &name, const string &username, const string &password) {
+        using namespace chrono;
         auto t = duration_cast<seconds>(system_clock::now().time_since_epoch()).count();
-        utils::ID id = "U" + std::to_string(t);
+        utils::ID id = "U" + to_string(t);
         while (usersById.find(id) != usersById.end()) {
-            ++t; id = "U" + std::to_string(t);
+            ++t; id = "U" + to_string(t);
         }
         User u(id, name, username, password, utils::Role::Passenger);
         usersById[id] = u;
@@ -43,13 +45,13 @@ namespace users {
         return &it->second;
     }
 
-    const User* UserManager::findByUsername(const std::string &username) const {
+    const User* UserManager::findByUsername(const string &username) const {
         auto it = usernameToId.find(username);
         if (it == usernameToId.end()) return nullptr;
         return get(it->second);
     }
 
-    bool UserManager::authenticate(const std::string &username, const std::string &password, utils::ID &outId) const {
+    bool UserManager::authenticate(const string &username, const string &password, utils::ID &outId) const {
         const User* user = findByUsername(username);
         if (!user) return false;
         if (user->getPassword() != password) return false;
@@ -57,8 +59,8 @@ namespace users {
         return true;
     }
 
-    std::vector<User> UserManager::all() const {
-        std::vector<User> v;
+    vector<User> UserManager::all() const {
+        vector<User> v;
         v.reserve(usersById.size());
         for (const auto &p : usersById) v.push_back(p.second);
         return v;

@@ -3,6 +3,8 @@
 #include "../logging/Logger.h"
 #include <chrono>
 
+using namespace std;
+
 namespace flights {
     bool FlightManager::load() {
         flightsById.clear();
@@ -21,7 +23,7 @@ namespace flights {
     }
 
     bool FlightManager::save() const {
-        std::vector<std::string> lines;
+        vector<string> lines;
         
         for (const auto &pair : flightsById) {
             lines.push_back(pair.second.serialize());
@@ -30,18 +32,18 @@ namespace flights {
         return storage::DataStorage::writeAll("flights.txt", lines);
     }
 
-    utils::ID FlightManager::createFlight(const std::string &origin, const std::string &destination, 
-                                         const std::string &date, int capacity) {
-        using namespace std::chrono;
+    utils::ID FlightManager::createFlight(const string &origin, const string &destination, 
+                                         const string &date, int capacity) {
+        using namespace chrono;
         
         // Generate unique ID using current timestamp
         auto timestamp = duration_cast<seconds>(system_clock::now().time_since_epoch()).count();
-        utils::ID flightId = "F" + std::to_string(timestamp);
+        utils::ID flightId = "F" + to_string(timestamp);
         
         // Ensure ID is unique
         while (flightsById.find(flightId) != flightsById.end()) {
             ++timestamp;
-            flightId = "F" + std::to_string(timestamp);
+            flightId = "F" + to_string(timestamp);
         }
         
         // Create new flight with no bookings yet
@@ -54,7 +56,7 @@ namespace flights {
         // Log the creation
         logging::Logger::logCritical("FlightCreate", 
             "FLIGHT=" + flightId + "|" + origin + "->" + destination + 
-            "|capacity=" + std::to_string(capacity));
+            "|capacity=" + to_string(capacity));
         
         return flightId;
     }
@@ -67,8 +69,8 @@ namespace flights {
         return &it->second;
     }
 
-    std::vector<Flight> FlightManager::all() const {
-        std::vector<Flight> flights;
+    vector<Flight> FlightManager::all() const {
+        vector<Flight> flights;
         flights.reserve(flightsById.size());
         
         for (const auto &pair : flightsById) {

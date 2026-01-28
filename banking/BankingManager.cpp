@@ -3,6 +3,8 @@
 #include "../logging/Logger.h"
 #include <chrono>
 
+using namespace std;
+
 namespace banking {
     bool BankingManager::load() {
         accountsById.clear();
@@ -23,7 +25,7 @@ namespace banking {
     }
 
     bool BankingManager::save() const {
-        std::vector<std::string> lines;
+        vector<string> lines;
         lines.reserve(accountsById.size());
         
         for (const auto &pair : accountsById) {
@@ -41,14 +43,14 @@ namespace banking {
         }
         
         // Create new account for this user
-        using namespace std::chrono;
+        using namespace chrono;
         auto timestamp = duration_cast<seconds>(system_clock::now().time_since_epoch()).count();
-        utils::ID accountId = "A" + std::to_string(timestamp);
+        utils::ID accountId = "A" + to_string(timestamp);
         
         // Ensure ID is unique
         while (accountsById.find(accountId) != accountsById.end()) {
             ++timestamp;
-            accountId = "A" + std::to_string(timestamp);
+            accountId = "A" + to_string(timestamp);
         }
         
         // Create account with zero balance
@@ -78,8 +80,8 @@ namespace banking {
         return getAccount(it->second);
     }
 
-    std::vector<Transaction> BankingManager::getTransactionsForAccount(const utils::ID &accountId) const {
-        std::vector<Transaction> transactions;
+    vector<Transaction> BankingManager::getTransactionsForAccount(const utils::ID &accountId) const {
+        vector<Transaction> transactions;
         auto lines = storage::DataStorage::readAll("transactions.txt");
         
         for (const auto &line : lines) {
@@ -97,7 +99,7 @@ namespace banking {
     }
 
     utils::Result BankingManager::deposit(const utils::ID &accountId, long long amountCents, 
-                                         const std::string &description) {
+                                         const string &description) {
         // Validate amount
         if (amountCents <= 0) {
             return utils::Result::Err("Deposit amount must be positive");
@@ -115,9 +117,9 @@ namespace banking {
         save();
         
         // Create transaction record
-        using namespace std::chrono;
+        using namespace chrono;
         auto timestamp = duration_cast<seconds>(system_clock::now().time_since_epoch()).count();
-        utils::ID transactionId = "T" + std::to_string(timestamp);
+        utils::ID transactionId = "T" + to_string(timestamp);
         
         Transaction transaction(transactionId, accountId, amountCents, 
                               TransactionType::Credit, description, timestamp);
@@ -125,13 +127,13 @@ namespace banking {
         
         // Log activity
         logging::Logger::logCritical("Payment", 
-            "ACCOUNT=" + accountId + "|CREDIT=" + std::to_string(amountCents));
+            "ACCOUNT=" + accountId + "|CREDIT=" + to_string(amountCents));
         
         return utils::Result::Ok("Deposit successful");
     }
 
     utils::Result BankingManager::withdraw(const utils::ID &accountId, long long amountCents, 
-                                          const std::string &description) {
+                                          const string &description) {
         // Validate amount
         if (amountCents <= 0) {
             return utils::Result::Err("Withdrawal amount must be positive");
@@ -154,9 +156,9 @@ namespace banking {
         save();
         
         // Create transaction record
-        using namespace std::chrono;
+        using namespace chrono;
         auto timestamp = duration_cast<seconds>(system_clock::now().time_since_epoch()).count();
-        utils::ID transactionId = "T" + std::to_string(timestamp);
+        utils::ID transactionId = "T" + to_string(timestamp);
         
         Transaction transaction(transactionId, accountId, amountCents, 
                               TransactionType::Debit, description, timestamp);
@@ -164,7 +166,7 @@ namespace banking {
         
         // Log activity
         logging::Logger::logCritical("Payment", 
-            "ACCOUNT=" + accountId + "|DEBIT=" + std::to_string(amountCents));
+            "ACCOUNT=" + accountId + "|DEBIT=" + to_string(amountCents));
         
         return utils::Result::Ok("Withdrawal successful");
     }

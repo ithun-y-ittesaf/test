@@ -7,16 +7,18 @@
 #include <iomanip>
 #include <sstream>
 
+using namespace std;
+
 namespace tickets {
     // Helper function to get current date as YYYY-MM-DD string
-    static std::string getCurrentDateString() {
-        using namespace std::chrono;
+    static string getCurrentDateString() {
+        using namespace chrono;
         
         auto now = system_clock::to_time_t(system_clock::now());
-        std::tm timeinfo = *std::localtime(&now);
+        tm timeinfo = *localtime(&now);
         
-        std::stringstream ss;
-        ss << std::put_time(&timeinfo, "%Y-%m-%d");
+        stringstream ss;
+        ss << put_time(&timeinfo, "%Y-%m-%d");
         return ss.str();
     }
 
@@ -37,7 +39,7 @@ namespace tickets {
     }
 
     bool TicketManager::save() const {
-        std::vector<std::string> lines;
+        vector<string> lines;
         
         for (const auto &pair : ticketsById) {
             lines.push_back(pair.second.serialize());
@@ -47,16 +49,15 @@ namespace tickets {
     }
 
     utils::ID TicketManager::issueTicket(const utils::ID &passengerId, const flights::Flight &flight) {
-        using namespace std::chrono;
+        using namespace chrono;
         
-        // Generate unique ticket ID based on timestamp
         auto timestamp = duration_cast<seconds>(system_clock::now().time_since_epoch()).count();
-        utils::ID ticketId = "TK" + std::to_string(timestamp);
+        utils::ID ticketId = "TK" + to_string(timestamp);
         
         // Ensure ID is unique
         while (ticketsById.find(ticketId) != ticketsById.end()) {
             ++timestamp;
-            ticketId = "TK" + std::to_string(timestamp);
+            ticketId = "TK" + to_string(timestamp);
         }
         
         // Create new ticket
@@ -64,7 +65,6 @@ namespace tickets {
                         flight.getOrigin(), flight.getDestination(), flight.getDate());
         ticketsById[ticketId] = newTicket;
         
-        // Persist to storage
         storage::DataStorage::appendLine("tickets.txt", newTicket.serialize());
         
         // Log the ticket issuance
@@ -82,8 +82,8 @@ namespace tickets {
         return &it->second;
     }
 
-    std::vector<Ticket> TicketManager::getForPassenger(const utils::ID &passengerId) const {
-        std::vector<Ticket> tickets;
+    vector<Ticket> TicketManager::getForPassenger(const utils::ID &passengerId) const {
+        vector<Ticket> tickets;
         
         for (const auto &pair : ticketsById) {
             if (pair.second.getPassengerId() == passengerId) {
