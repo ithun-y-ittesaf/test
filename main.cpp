@@ -61,21 +61,36 @@ int main() {
         int choice = 0;
         cin >> choice;
 
-        if (choice == 1) {
+        switch (choice) {
+            case 1:
             flightsCLI.runSearchAndBook(userId, userRole);
-        } else if (choice == 2) {
+            break;
+            case 2:
             ticketsCLI.runViewTickets(userId, userRole);
-        } else if (choice == 3) {
+            break;
+            case 3:
             ticketsCLI.runTravelHistory(userId, userRole);
-        } else if (choice == 4) {
+            break;
+            case 4:
             bankingCLI.runBanking(userId, userRole);
-        } else if (choice == 5 && userRole == utils::Role::Admin) {
-            flightsCLI.run(userId, userRole);
-        } else if ((choice == 5 && userRole != utils::Role::Admin) ||
-                   (choice == 6 && userRole == utils::Role::Admin)) {
-            cout << "\nLogging out...\n";
-            isRunning = false;
-        } else {
+            break;
+            case 5:
+            if (userRole == utils::Role::Admin) {
+                flightsCLI.run(userId, userRole);
+            } else {
+                cout << "\nLogging out...\n";
+                isRunning = false;
+            }
+            break;
+            case 6:
+            if (userRole == utils::Role::Admin) {
+                cout << "\nLogging out...\n";
+                isRunning = false;
+            } else {
+                cout << "\nInvalid option. Please try again.\n";
+            }
+            break;
+            default:
             cout << "\nInvalid option. Please try again.\n";
         }
     }
